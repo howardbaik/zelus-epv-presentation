@@ -1,0 +1,36 @@
+---
+title: "Animating Expected Possession Value (EPV)"
+author: "Howard Baik"
+date: 01/28/2025
+date-format: medium
+format: 
+  revealjs:
+    theme: serif
+---
+
+::: columns
+::: {.column width="35%"}
+#### Motor Trend Car Road Tests
+
+The data was extracted from the 1974 Motor Trend US magazine, and comprises fuel consumption and 10 aspects of automobile design and performance for 32 automobiles.
+:::
+
+::: {.column width="3%"}
+:::
+
+::: {.column width="62%"}
+```{r}
+knitr::kable(head(mtcars)[,c("mpg",	"cyl", "disp", "hp", "wt")])
+```
+:::
+:::
+
+## Getting up
+
+- Turn off alarm
+- Get out of bed
+
+## Going to sleep
+
+- Get in bed
+- Count sheep
