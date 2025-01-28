@@ -8,27 +8,44 @@ format:
     theme: serif
 ---
 
-::: columns
-::: {.column width="35%"}
-#### Motor Trend Car Road Tests
+## About Me
 
-The data was extracted from the 1974 Motor Trend US magazine, and comprises fuel consumption and 10 aspects of automobile design and performance for 32 automobiles.
+::: columns
+::: {.column width="50%"}
+
+- Data Scientist at the Yale School of Public Health.
+- Has used R since 2016, when I first learned it to analyze hockey data.
+- Currently pursuing a Postbaccalaureate degree in Computer Science to become a better software engineer specializing in R.
+
 :::
 
 ::: {.column width="3%"}
 :::
 
-::: {.column width="62%"}
-```{r}
-knitr::kable(head(mtcars)[,c("mpg",	"cyl", "disp", "hp", "wt")])
-```
+::: {.column width="47%"}
+![](/images/profile.jpeg)
 :::
 :::
 
-## Getting up
+## EPV: The possession stock ticker
 
-- Turn off alarm
-- Get out of bed
+::: columns
+::: {.column width="50%"}
+
+- **Expected Possession Value (EPV)** is the expected number of points the offense will score, given the spatial configuration of the players and the ball at a specific point in time during a possession.
+- Passing to a wide open shooter is worth more expected points than to a covered player.
+
+:::
+
+::: {.column width="3%"}
+:::
+
+::: {.column width="47%"}
+![](/images/pointwise.png)
+:::
+:::
+
+
 
 ## Going to sleep
 
