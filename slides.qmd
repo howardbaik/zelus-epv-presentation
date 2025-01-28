@@ -6,7 +6,20 @@ date-format: medium
 format: 
   revealjs:
     theme: serif
+    slide-number: true
 ---
+
+## Game Plan
+
+1. About Me
+2. Motivation for the Project
+3. Introduction to the Project
+4. Engineering Choices / Technical Difficulties
+5. Future Ideas for the Project
+
+::: {.notes}
+The game plan for today will be to share a little bit about myself, then I will talk about the motivation for this personal project, introduce the project, and then discuss the engineering choices and the technical difficulties that followed thoseo choices, and end off with the future ideas for the project. 
+:::
 
 ## About Me
 
@@ -14,7 +27,7 @@ format:
 ::: {.column width="50%"}
 
 - Data Scientist at the Yale School of Public Health.
-- Has used R since 2016, when I first learned it to analyze hockey data.
+- Have used R since 2016, when I first learned it to analyze hockey data.
 - Currently pursuing a Postbaccalaureate degree in Computer Science to become a better software engineer specializing in R.
 
 :::
@@ -27,27 +40,341 @@ format:
 :::
 :::
 
-## EPV: The possession stock ticker
 
-::: columns
+::: {.notes}
+I am a Data Scientist at the Yale School of Public Health. I currently live in New Haven, Connecticut, which is 2 hours away from New York and Boston. I have been using R since 2016, when I first learned it to analyze hockey data. I grew up in Vancouver, Canada. And I am currently pursuing a postbaccalaureate degree in Computer Science to become a better software engineer specializing in R.  
+:::
+
+## Motivation for Project
+
+The Seminal Paper on NBA Tracking Data
+
+![](images/pointwise.png)
+
+::: footer
+[POINTWISE: Predicting Points and Valuing Decisions in Real Time with NBA Optical Tracking Data](https://www.lukebornn.com/papers/cervone_ssac_2014.pdf)
+:::
+
+
+::: {.notes}
+I came across this Sloan paper by Dan Cervone, Alex DAMour, Luke Bornn, and Kirk Goldsberry, which introduces a possession evaluation framework called expected possession value (EPV). 
+:::
+
+## Expected Posession Value (EPV)
+
+<br>
+
+**Expected Possession Value (EPV)** is the expected number of points the offense will score, given the spatial configuration of the players and the ball at a specific point in time during a possession.
+
+<br>
+
+_This performance metric is now widely used in other continuous-action sports, like soccer._
+
+
+::: {.notes}
+I am sure many of you are familiar with this metric. To me, EPV is easily defined as the expected number of points the offense will score, given the spatial configuration of the players and ball at a specific point in time during a possession. And this metric is widely used not only in basketball, but other continuous-action sports, like soccer.
+:::
+
+## Would be cool to animate this:  {background-size="1500px"  background-image="images/motivation.png"}
+
+::: {.notes}
+I came across this figure from the paper and thought it would be cool to animate this. Figure 2 shows EPV as a possession stock ticker on the bottom, and the spatial configuration on top. Showing both at the same time makes it easier to understand the context of the changes in EPV during the possession. 
+:::
+
+## Introducing "Animating Expected Possession Value"
+
+In 2019, I wrote two blog posts about this work:
+
+- [Animating Expected Possession Value in the NBA](https://www.howardbaik.com/posts/animating-epv-in-the-nba/){target="_blank" style="color:green;"}
+- [Animating Expected Possession Value in the NBA Extended](https://www.howardbaik.com/posts/animating-epv-in-the-nba-extended/){target="_blank" style="color:darkgreen;"}
+
+<br>
+
+_"I posted to our analytics group and they were very excited about the work you're doing"_ (Taken from an email I received in 2019 from an NBA Executive)
+
+::: {.notes}
+So, I wrote a couple of blog posts about animating EPV in the NBA. Here, I show the animated plots and interpret each possession during the final minute of an NBA game between the Miami Heat and the Brooklyn Nets in the context of Expected Possession  Value.
+:::
+
+
+##  {background-video="images/epv-animation.mov" background-video-loop="true" background-video-muted="true" background-size="contain"}
+
+::: {.notes}
+This animation is the key contribution I made in these blogposts. I have the game film shown on the top, and the EPV stock ticker animation, and then the spatial configuration of players on the bottom. The two plots that I created are synced in time, while the game film is not, but show the corresponding possession.
+:::
+
+
+## Engineering Choices
+
+Plot player locations using {ggplot2}
+
+::: {.panel-tabset}
+
+### Code
+
+```{.r code-line-numbers="1"}
+full_court() +
+  # Home Player 1
+  geom_point(epv_poss, aes(x = h1_x, y = h1_y, group = possID), size = 6, color = "lightskyblue1") +  
+  geom_text(epv_poss, aes(x = h1_x, y = h1_y, group = possID, label = h1_ent_jersey), color = 'black', alpha = 0.3) + 
+  # Home Player 2
+  geom_point(epv_poss, aes(x = h2_x, y = h1_y, group = possID), size = 6, color = "lightskyblue1") +  
+  geom_text(epv_poss, aes(x = h2_x, y = h1_y, group = possID, label = h1_ent_jersey), color = 'black', alpha = 0.3) + 
+  ...
+```
+
+### Plot
+
+![](./images/full-court.png){width=700px}
+
+:::
+
+::: {.notes}
+On to the Engineering Choices. Using ggplot2, I first plotted the basketball court with the full_court function. 
+:::
+
+## Engineering Choices
+
+Plot player locations using {ggplot2}
+
+::: {.panel-tabset}
+
+### Code
+
+```{.r code-line-numbers="2-8"}
+full_court() +
+  # Home Player 1
+  geom_point(epv_poss, aes(x = h1_x, y = h1_y, group = possID), size = 6, color = "lightskyblue1") +  
+  geom_text(epv_poss, aes(x = h1_x, y = h1_y, group = possID, label = h1_ent_jersey), color = 'black', alpha = 0.3) + 
+  # Home Player 2
+  geom_point(epv_poss, aes(x = h2_x, y = h1_y, group = possID), size = 6, color = "lightskyblue1") +  
+  geom_text(epv_poss, aes(x = h2_x, y = h1_y, group = possID, label = h1_ent_jersey), color = 'black', alpha = 0.3) + 
+  ...
+```
+
+### Plot
+
+![](./images/player-movement.png){width=700px}
+
+:::
+
+
+::: {.notes}
+Then, I plotted the movement of each of the ten players on the court with geom_point and added jersey numbers to these points with geom_text. The jersey numbers were scraped from the web using the player IDs. 
+:::
+
+
+## Engineering Choices
+
+Plot EPV over time using {ggplot2}
+
+::: {.panel-tabset}
+
+### Code
+
+```{.r}
+ epv_poss |> 
+      ggplot(aes(x = 720 - game_clock, y = epv.smooth)) +
+      geom_path()
+```
+
+### Plot
+
+![](/images/epv-line.png){width=700px}
+
+:::
+
+
+::: {.notes}
+I then plotted the smoothed EPV values over time with geom_path
+:::
+
+
+
+## Engineering Choices
+
+Animate with {gganimate} 
+
+::: {.panel-tabset}
+
+### Code
+
+```{.r code-line-numbers="1-2"}
+pbp_gif <- animate(pbp_anim, width = 480, height = 480)
+epv_gif <- animate(epv_anim, width = 600, height = 240)
+
+pbp_mgif <- image_read(pbp_gif)
+epv_mgif <- image_read(epv_gif)
+
+pbp_epv_gif <- image_append(c(epv_mgif[1], pbp_mgif[1]), stack = TRUE)
+for(ii in 2:100){
+  combined <- image_append(c(epv_mgif[ii], pbp_mgif[ii]), stack = TRUE)
+  pbp_epv_gif <- c(pbp_epv_gif, combined)
+}
+```
+
+### Plot
+
+![](/images/anim-223.GIF){width=600px}
+
+:::
+
+::: {.notes}
+Then, I saved the plots animated with gganimate in variables.
+:::
+
+
+
+## Engineering Choices
+
+Animate with {gganimate} and combine with {magick}
+
+::: {.panel-tabset}
+
+### Code
+
+```{.r code-line-numbers="4-11"}
+pbp_gif <- animate(pbp_anim, width = 480, height = 480)
+epv_gif <- animate(epv_anim, width = 600, height = 240)
+
+pbp_mgif <- image_read(pbp_gif)
+epv_mgif <- image_read(epv_gif)
+
+pbp_epv_gif <- image_append(c(epv_mgif[1], pbp_mgif[1]), stack = TRUE)
+for(ii in 2:100){
+  combined <- image_append(c(epv_mgif[ii], pbp_mgif[ii]), stack = TRUE)
+  pbp_epv_gif <- c(pbp_epv_gif, combined)
+}
+```
+
+### Plot
+
+![](/images/anim-223.GIF){width=600px}
+
+:::
+
+::: {.notes}
+And finally, combine the two animations into one image using the magick R package.
+:::
+
+
+
+## Technical Difficulties
+
+In 2019, animation rendering took 2-3 minutes, making real-time rendering within a Shiny app impractical.
+
+::: {.notes}
+6 years ago, it took a couple minutes to render a single animation. This made it impractical to use gganimate inside a Shiny app.
+:::
+
+## Potential Solutions
+
+1. Hiroaki Yutani's presentation "How To Craft A Blazingly Fast Graphics Device": [Lottie](https://lottie.github.io/){target="_blank" style="color:green;"} may be the answer.
+
+![](/images/lottie.png)
+
+::: footer
+[How To Craft A Blazingly Fast Graphics Device](https://yutani.quarto.pub/japanr-2024/#/title-slide)
+:::
+
+::: {.notes}
+Fast-forward 6 years, not only do we  have speed improvements to gganimate's rendering, we have new technologies, like vellogd and Lottie, that provide speed improvements. From what I can gather from the presentation slides, Lottie allows you to skip all these intermediary steps, and move your ggplot straight to the Graphics device, which should speed up your rendering.
+:::
+
+## Potential Solutions
+
+2. Run `gganimate::animate()` in parallel using {future}
+
+![](/images/gganimate-parallel.png)
+
+::: footer
+[Support for running gganimate::animate() in parallel](https://github.com/thomasp85/gganimate/pull/403)
+:::
+
+
+## Future Ideas {background-image="images/future-ideas.jpg"}
+
+
+## Deploy to Production
+
+![](/images/deploy-production.png)
+
+::: {.notes}
+If I were to deploy to production, I would design this AWS architecture. This is based on my solution to Q1 of the Take-Home Assessment and my conversation with Lydia last week. 
+:::
+
+
+
+## A Model in an R package
+
+Dan Cervone shared the code and the model parameters on GitHub:
+
+:::: {.columns}
+
 ::: {.column width="50%"}
-
-- **Expected Possession Value (EPV)** is the expected number of points the offense will score, given the spatial configuration of the players and the ball at a specific point in time during a possession.
-- Passing to a wide open shooter is worth more expected points than to a covered player.
-
+![](./images/epv-code.png)
 :::
 
-::: {.column width="3%"}
+::: {.column width="50%"}
+![](./images/epv-model.png)
 :::
 
-::: {.column width="47%"}
-![](/images/pointwise.png)
+::::
+
+
+::: footer
+[EPVDemo GitHub Repo](https://github.com/dcervone/EPVDemo)
 :::
+
+::: {.notes}
+Dan Cervone shared the code for computing EPV, a sample of the tracking data, and the model parameters as .Rdata files on GitHub. 
 :::
 
 
 
-## Going to sleep
+## A Model in an R package
 
-- Get in bed
-- Count sheep
+- Functions to transform the data and compute EPV placed inside `R/` directory.
+- Model parameters and data stored in package's internal data in `R/sysdata.rda` so they are lazy-loaded on demand. 
+- Add model dependencies (R packages) in the `DESCRIPTION` file `Imports` field.
+- Other helpful information, such as the model description or use case, can be added to the `DESCRIPTION` file.
+
+
+## MLOps with {vetiver}
+
+![](./images/vetiver.png)
+
+::: footer
+[Deploy with Docker](https://vetiver.posit.co/learn-more/deploy-with-docker.html)
+:::
+
+::: {.notes}
+Another idea that is native to R and Python and built out by the MLOps team at Posit is vetiver. If we have a model trained with any of these R packages, then we can create a vetiver model (which is a model that contains the metadata required to store, version, and deploy a trained model) and then store,version the vetiver model with a pins "board" to Amazon S3. Then, using Docker, we can build a vetiver model API that we can deploy to Amazon ECS. 
+:::
+
+
+
+
+
+## Production-Ready Shiny App
+
+[NBA Expected Possession Value App](https://howardbaik.shinyapps.io/zelus-epv-app/){target="_blank" style="color:green;"} lets users easily select the EPV of specific possessions.
+
+
+
+## Conclusion
+
+Why I want to join the Soccer Team at Teamworks:
+
+1. Engineer who is well-versed in R.
+2. Excited to engineer pipelines that process tracking data.
+3. Work with the world's leading sports analytics team.
+
+
+::: {.notes}
+First, I am a software engineer at heart, and have made R my language of choice for the past 9 years. I feel that my skills and experience with the R language will help me contribute to the soccer team. Also, I am excited to build data pipelines for processing tracking data. As seen from this presentation, I have experience working on the frontend of the pipeline, which is wrangling the processed data and creating visualizations. By working on the take-home assessment and preparing for this presentation, I have developed a desire to dive deeper into the engineering side of the data science pipeline by using AWS services and R to process tracking data. Ever since it was founded in 2019, I have been following Zelus and have noted that all the great minds in sports analytics are at Zelus. I would love to join this team, collaborate with the best minds in sports, and bring value to the company while having a great time.
+:::
+
+
+
+## Thank You {background-image="images/thank-you.jpeg"}
